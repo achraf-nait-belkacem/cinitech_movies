@@ -1,0 +1,142 @@
+.admin-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    color: #ffd700;
+    margin-bottom: 1.5rem;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+    color: #ffd700;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.stat-card p {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.admin-error {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff6b6b;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.admin-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    color: #ffd700;
+    font-size: 1.2rem;
+}
+
+.users-table-container {
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.users-table-container h2 {
+    color: #ffd700;
+    margin-bottom: 1.5rem;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.users-table th {
+    background-color: #1a1a1a;
+    color: #ffd700;
+    font-weight: 500;
+}
+
+.users-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+.role-select {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 0.5rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+.delete-button {
+    background-color: #ff6b6b;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover:not(:disabled) {
+    background-color: #ff5252;
+}
+
+.delete-button:disabled {
+    background-color: #4a4a4a;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 1rem;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+} 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import PopularMovies from './pages/PopularMovies'
@@ -9,6 +9,16 @@ import UpcomingMovies from './pages/UpcomingMovies'
 import MovieDetails from './pages/MovieDetails'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Admin from './pages/Admin'
+import { isAdmin } from './services/authService'
+
+// Composant de protection des routes admin
+const AdminRoute = ({ children }) => {
+  if (!isAdmin()) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
@@ -24,6 +34,14 @@ function App() {
             <Route path="/film/:id" element={<MovieDetails />} />
             <Route path="/connexion" element={<Login />} />
             <Route path="/inscription" element={<Register />} />
+            <Route 
+              path="/admin" 
+              element={
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
+              } 
+            />
           </Routes>
         </main>
         <Footer />

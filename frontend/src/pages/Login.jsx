@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../services/authService';
 
 const Login = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -15,12 +18,19 @@ const Login = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
-        // TODO: Implémenter la logique de connexion
-        console.log('Données de connexion:', formData);
+        try {
+            await login(formData.email, formData.password);
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Une erreur est survenue lors de la connexion');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -51,13 +61,18 @@ const Login = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="auth-button">
-                        Se connecter
+                    <button 
+                        type="submit" 
+                        className="auth-button"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Connexion...' : 'Se connecter'}
                     </button>
                 </form>
-                <p className="auth-link">
-                    Pas encore de compte ? <Link to="/inscription">S'inscrire</Link>
-                </p>
+                <div className="auth-link">
+                    Pas encore de compte ?
+                    <a href="/inscription">S'inscrire</a>
+                </div>
             </div>
         </div>
     );

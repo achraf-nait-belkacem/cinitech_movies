@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { register } from '../services/authService';
 
 const Register = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -9,6 +11,7 @@ const Register = () => {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -17,7 +20,7 @@ const Register = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -26,8 +29,16 @@ const Register = () => {
             return;
         }
 
-        // TODO: Implémenter la logique d'inscription
-        console.log('Données d\'inscription:', formData);
+        setIsLoading(true);
+
+        try {
+            await register(formData.username, formData.email, formData.password);
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -80,13 +91,18 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="auth-button">
-                        S'inscrire
+                    <button 
+                        type="submit" 
+                        className="auth-button"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Inscription...' : 'S\'inscrire'}
                     </button>
                 </form>
-                <p className="auth-link">
-                    Déjà inscrit ? <Link to="/connexion">Se connecter</Link>
-                </p>
+                <div className="auth-link">
+                    Déjà un compte ?
+                    <a href="/connexion">Se connecter</a>
+                </div>
             </div>
         </div>
     );
