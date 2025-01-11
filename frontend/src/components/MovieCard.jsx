@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const MovieCard = ({ movie }) => {
     const imageUrl = movie.poster_path
@@ -14,6 +15,9 @@ const MovieCard = ({ movie }) => {
                 <p className="movie-release-date">
                     {new Date(movie.release_date).toLocaleDateString('fr-FR')}
                 </p>
+                <Link to={`/film/${movie.id}`} className="details-button">
+                    Plus de détails
+                </Link>
             </div>
         </div>
     );
