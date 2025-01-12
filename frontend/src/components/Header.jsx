@@ -60,6 +60,16 @@ const Header = () => {
                                 À venir
                             </Link>
                         </li>
+                        {user && (
+                            <li>
+                                <Link 
+                                    to="/watchlist" 
+                                    className={location.pathname === '/watchlist' ? 'active' : ''}
+                                >
+                                    📋 À regarder plus tard
+                                </Link>
+                            </li>
+                        )}
                         {user && user.role === 'admin' && (
                             <li>
                                 <Link 
