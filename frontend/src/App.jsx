@@ -10,7 +10,8 @@ import MovieDetails from './pages/MovieDetails'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin'
-import { isAdmin } from './services/authService'
+import { isAdmin, isAuthenticated } from './services/authService'
+import Favorites from './pages/Favorites'
 
 // Composant de protection des routes admin
 const AdminRoute = ({ children }) => {
@@ -18,6 +19,10 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/" replace />;
   }
   return children;
+};
+
+const PrivateRoute = ({ children }) => {
+  return isAuthenticated() ? children : <Navigate to="/connexion" />;
 };
 
 function App() {
@@ -42,6 +47,7 @@ function App() {
                 </AdminRoute>
               } 
             />
+            <Route path="/favoris" element={<PrivateRoute><Favorites /></PrivateRoute>} />
           </Routes>
         </main>
         <Footer />
