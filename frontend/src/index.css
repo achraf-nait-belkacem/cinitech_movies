@@ -206,6 +206,9 @@ body {
   overflow: hidden;
   transition: transform 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .movie-card:hover {
@@ -849,4 +852,325 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.movie-poster-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.favorite-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.favorite-button.is-favorite {
+  color: #ffd700;
+}
+
+/* Loading and Error Styles */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #3a3a3a;
+    border-top: 4px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: rgba(255, 107, 107, 0.1);
+    border-radius: 8px;
+    border: 1px solid #ff6b6b;
+}
+
+.error-container h2 {
+    color: #ff6b6b;
+    margin-bottom: 1rem;
+}
+
+.error-container p {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.retry-button {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background-color: #ff5252;
+}
+
+.load-more-button:disabled {
+    background-color: #4a4a4a;
+    cursor: not-allowed;
+}
+
+/* Reviews Styles */
+.reviews-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+}
+
+.reviews-section h2 {
+    color: #ffd700;
+    margin-bottom: 2rem;
+}
+
+.review-form {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+}
+
+.rating-input {
+    margin-bottom: 1rem;
+}
+
+.star {
+    color: #4a4a4a;
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.star.filled {
+    color: #ffd700;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #3a3a3a;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffd700;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.submit-button, .edit-button {
+    background-color: #ffd700;
+    color: #1a1a1a;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover, .edit-button:hover {
+    background-color: #ffed4a;
+}
+
+.cancel-button, .delete-button {
+    background-color: transparent;
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.cancel-button:hover, .delete-button:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-card {
+    background-color: #1a1a1a;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.username {
+    font-weight: 500;
+    color: #ffd700;
+}
+
+.review-comment {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.review-date {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.user-review {
+    background-color: rgba(255, 215, 0, 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.user-review h3 {
+    color: #ffd700;
+    margin-bottom: 1rem;
+}
+
+.review-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.error-message {
+    background-color: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.no-reviews {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+/* Watchlist Styles */
+.watchlist-button {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffd700;
+    color: #1a1a1a;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.watchlist-button:hover {
+    background-color: #ffed4a;
+    transform: translateX(-50%) scale(1.05);
+}
+
+.watchlist-button.in-watchlist {
+    background-color: #4a4a4a;
+    color: #ffffff;
+}
+
+.watchlist-button.in-watchlist:hover {
+    background-color: #ff6b6b;
+}
+
+.movie-poster {
+    position: relative;
+}
+
+.watchlist-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.watchlist-page h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    color: #ffd700;
+}
+
+.empty-watchlist {
+    text-align: center;
+    padding: 3rem;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.empty-watchlist p:first-child {
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin-bottom: 1rem;
+}
+
+.empty-watchlist p:last-child {
+    color: #888;
 }
