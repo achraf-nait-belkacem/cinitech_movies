@@ -174,10 +174,14 @@ app.get('/', (req, res) => {
     res.json({ message: 'API Cinitech Movies est en ligne!' });
 });
 
-// Routes pour les favoris
+// Route pour ajouter un film aux favoris
 app.post('/api/favorites', authenticateToken, (req, res) => {
     const { movie_id } = req.body;
     const user_id = req.user.id;
+
+    if (!movie_id) {
+        return res.status(400).json({ message: 'L\'ID du film est requis' });
+    }
 
     db.run(
         'INSERT INTO favorites (user_id, movie_id) VALUES (?, ?)',
@@ -185,7 +189,7 @@ app.post('/api/favorites', authenticateToken, (req, res) => {
         function(err) {
             if (err) {
                 if (err.message.includes('UNIQUE constraint failed')) {
-                    return res.status(400).json({ message: 'Film déjà dans les favoris' });
+                    return res.status(400).json({ message: 'Ce film est déjà dans vos favoris' });
                 }
                 return res.status(500).json({ message: 'Erreur lors de l\'ajout aux favoris' });
             }
