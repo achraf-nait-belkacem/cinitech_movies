@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchMovieDetails } from '../services/tmdbApi';
-import { addToWatchlist, removeFromWatchlist, isInWatchlist } from '../services/watchlistService';
+import { addToFavorites, removeFromFavorites, isInFavorites } from '../services/favoriteService';
 import { isAuthenticated } from '../services/authService';
 import MovieReviews from '../components/MovieReviews';
 
@@ -10,7 +10,7 @@ const MovieDetails = () => {
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [inWatchlist, setInWatchlist] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         const loadMovie = async () => {
@@ -18,8 +18,8 @@ const MovieDetails = () => {
                 const data = await fetchMovieDetails(id);
                 setMovie(data);
                 if (isAuthenticated()) {
-                    const watchlistStatus = await isInWatchlist(id);
-                    setInWatchlist(watchlistStatus);
+                    const favoriteStatus = await isInFavorites(id);
+                    setIsFavorite(favoriteStatus);
                 }
                 setLoading(false);
             } catch (error) {
@@ -31,22 +31,22 @@ const MovieDetails = () => {
         loadMovie();
     }, [id]);
 
-    const handleWatchlistClick = async () => {
+    const handleFavoriteClick = async () => {
         if (!isAuthenticated()) {
-            alert('Veuillez vous connecter pour ajouter des films à votre liste');
+            alert('Veuillez vous connecter pour ajouter des films aux favoris');
             return;
         }
 
         try {
-            if (inWatchlist) {
-                await removeFromWatchlist(id);
-                setInWatchlist(false);
+            if (isFavorite) {
+                await removeFromFavorites(id);
+                setIsFavorite(false);
             } else {
-                await addToWatchlist(id);
-                setInWatchlist(true);
+                await addToFavorites(id);
+                setIsFavorite(true);
             }
         } catch (error) {
-            console.error('Erreur lors de la gestion de la watchlist:', error);
+            console.error('Erreur lors de la gestion des favoris:', error);
             alert(error.message);
         }
     };
@@ -97,11 +97,11 @@ const MovieDetails = () => {
                             alt={movie.title}
                         />
                         <button 
-                            onClick={handleWatchlistClick}
-                            className={`watchlist-button ${inWatchlist ? 'in-watchlist' : ''}`}
-                            title={inWatchlist ? 'Retirer de la liste' : 'Ajouter à la liste'}
+                            onClick={handleFavoriteClick}
+                            className={`favorite-button ${isFavorite ? 'is-favorite' : ''}`}
+                            title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                         >
-                            {inWatchlist ? '✓ Dans ma liste' : '+ À regarder plus tard'}
+                            {isFavorite ? '★' : '☆'}
                         </button>
                     </div>
                     <div className="movie-info-hero">

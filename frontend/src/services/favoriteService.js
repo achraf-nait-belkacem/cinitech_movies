@@ -14,12 +14,15 @@ export const addToFavorites = async (movieId) => {
         });
 
         const data = await response.json();
+        console.log('Add to favorites response:', data);
+
         if (!response.ok) {
             throw new Error(data.message);
         }
 
         return data;
     } catch (error) {
+        console.error('Error in addToFavorites:', error);
         throw error;
     }
 };
@@ -34,18 +37,22 @@ export const removeFromFavorites = async (movieId) => {
         });
 
         const data = await response.json();
+        console.log('Remove from favorites response:', data);
+
         if (!response.ok) {
             throw new Error(data.message);
         }
 
         return data;
     } catch (error) {
+        console.error('Error in removeFromFavorites:', error);
         throw error;
     }
 };
 
 export const getFavorites = async () => {
     try {
+        console.log('Getting favorites with token:', getToken());
         const response = await fetch(`${API_URL}/favorites`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
@@ -53,12 +60,25 @@ export const getFavorites = async () => {
         });
 
         const data = await response.json();
+        console.log('Get favorites response:', data);
+
         if (!response.ok) {
             throw new Error(data.message);
         }
 
         return data;
     } catch (error) {
+        console.error('Error in getFavorites:', error);
         throw error;
+    }
+};
+
+export const isInFavorites = async (movieId) => {
+    try {
+        const favorites = await getFavorites();
+        return favorites.some(id => id === parseInt(movieId));
+    } catch (error) {
+        console.error('Error in isInFavorites:', error);
+        return false;
     }
 }; 
