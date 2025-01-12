@@ -174,6 +174,234 @@ app.get('/', (req, res) => {
     res.json({ message: 'API Cinitech Movies est en ligne!' });
 });
 
+// Routes pour les favoris
+app.post('/api/favorites', authenticateToken, (req, res) => {
+    const { movie_id } = req.body;
+    const user_id = req.user.id;
+
+    db.run(
+        'INSERT INTO favorites (user_id, movie_id) VALUES (?, ?)',
+        [user_id, movie_id],
+        function(err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.status(400).json({ message: 'Film déjà dans les favoris' });
+                }
+                return res.status(500).json({ message: 'Erreur lors de l\'ajout aux favoris' });
+            }
+            res.status(201).json({ message: 'Film ajouté aux favoris' });
+        }
+    );
+});
+
+app.delete('/api/favorites/:movieId', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+
+    db.run(
+        'DELETE FROM favorites WHERE user_id = ? AND movie_id = ?',
+        [user_id, movie_id],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la suppression des favoris' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Film non trouvé dans les favoris' });
+            }
+            res.json({ message: 'Film retiré des favoris' });
+        }
+    );
+});
+
+app.get('/api/favorites', authenticateToken, (req, res) => {
+    const user_id = req.user.id;
+
+    db.all(
+        'SELECT movie_id FROM favorites WHERE user_id = ?',
+        [user_id],
+        (err, favorites) => {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la récupération des favoris' });
+            }
+            res.json(favorites.map(fav => fav.movie_id));
+        }
+    );
+});
+
+// Routes pour les reviews
+app.post('/api/reviews', authenticateToken, (req, res) => {
+    const { movie_id, rating, comment } = req.body;
+    const user_id = req.user.id;
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    }
+
+    db.run(
+        'INSERT INTO reviews (user_id, movie_id, rating, comment) VALUES (?, ?, ?, ?)',
+        [user_id, movie_id, rating, comment],
+        function(err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.status(400).json({ message: 'Vous avez déjà donné votre avis sur ce film' });
+                }
+                return res.status(500).json({ message: 'Erreur lors de l\'ajout de l\'avis' });
+            }
+            res.status(201).json({ message: 'Avis ajouté avec succès' });
+        }
+    );
+});
+
+app.get('/api/reviews/movie/:movieId', (req, res) => {
+    const movie_id = req.params.movieId;
+
+    db.all(
+        `SELECT reviews.*, users.username 
+         FROM reviews 
+         JOIN users ON reviews.user_id = users.id 
+         WHERE movie_id = ? 
+         ORDER BY reviews.created_at DESC`,
+        [movie_id],
+        (err, reviews) => {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la récupération des avis' });
+            }
+            res.json(reviews);
+        }
+    );
+});
+
+app.get('/api/reviews/user/:movieId', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+
+    db.get(
+        'SELECT * FROM reviews WHERE user_id = ? AND movie_id = ?',
+        [user_id, movie_id],
+        (err, review) => {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la récupération de l\'avis' });
+            }
+            res.json(review || null);
+        }
+    );
+});
+
+app.put('/api/reviews/:movieId', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+    const { rating, comment } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    }
+
+    db.run(
+        `UPDATE reviews 
+         SET rating = ?, comment = ?, updated_at = CURRENT_TIMESTAMP 
+         WHERE user_id = ? AND movie_id = ?`,
+        [rating, comment, user_id, movie_id],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'avis' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Avis non trouvé' });
+            }
+            res.json({ message: 'Avis mis à jour avec succès' });
+        }
+    );
+});
+
+app.delete('/api/reviews/:movieId', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+
+    db.run(
+        'DELETE FROM reviews WHERE user_id = ? AND movie_id = ?',
+        [user_id, movie_id],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la suppression de l\'avis' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Avis non trouvé' });
+            }
+            res.json({ message: 'Avis supprimé avec succès' });
+        }
+    );
+});
+
+// Routes pour la watchlist
+app.post('/api/watchlist', authenticateToken, (req, res) => {
+    const { movie_id } = req.body;
+    const user_id = req.user.id;
+
+    db.run(
+        'INSERT INTO watchlist (user_id, movie_id) VALUES (?, ?)',
+        [user_id, movie_id],
+        function(err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.status(400).json({ message: 'Film déjà dans la liste à regarder' });
+                }
+                return res.status(500).json({ message: 'Erreur lors de l\'ajout à la liste' });
+            }
+            res.status(201).json({ message: 'Film ajouté à la liste à regarder' });
+        }
+    );
+});
+
+app.delete('/api/watchlist/:movieId', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+
+    db.run(
+        'DELETE FROM watchlist WHERE user_id = ? AND movie_id = ?',
+        [user_id, movie_id],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la suppression de la liste' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Film non trouvé dans la liste' });
+            }
+            res.json({ message: 'Film retiré de la liste à regarder' });
+        }
+    );
+});
+
+app.get('/api/watchlist', authenticateToken, (req, res) => {
+    const user_id = req.user.id;
+
+    db.all(
+        'SELECT movie_id FROM watchlist WHERE user_id = ? ORDER BY created_at DESC',
+        [user_id],
+        (err, movies) => {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la récupération de la liste' });
+            }
+            res.json(movies.map(movie => movie.movie_id));
+        }
+    );
+});
+
+app.get('/api/watchlist/:movieId/check', authenticateToken, (req, res) => {
+    const movie_id = req.params.movieId;
+    const user_id = req.user.id;
+
+    db.get(
+        'SELECT 1 FROM watchlist WHERE user_id = ? AND movie_id = ?',
+        [user_id, movie_id],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: 'Erreur lors de la vérification' });
+            }
+            res.json({ isInWatchlist: !!result });
+        }
+    );
+});
+
 // Démarrage du serveur
 app.listen(port, () => {
     console.log(`Serveur en cours d'exécution sur le port ${port}`);
