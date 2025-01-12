@@ -1,35 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchMovieDetails } from '../services/tmdbApi';
+import { addToWatchlist, removeFromWatchlist, isInWatchlist } from '../services/watchlistService';
+import { isAuthenticated } from '../services/authService';
+import MovieReviews from '../components/MovieReviews';
 
 const MovieDetails = () => {
     const { id } = useParams();
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [inWatchlist, setInWatchlist] = useState(false);
 
     useEffect(() => {
-        const loadMovieDetails = async () => {
+        const loadMovie = async () => {
             try {
                 const data = await fetchMovieDetails(id);
                 setMovie(data);
+                if (isAuthenticated()) {
+                    const watchlistStatus = await isInWatchlist(id);
+                    setInWatchlist(watchlistStatus);
+                }
                 setLoading(false);
-            } catch (err) {
+            } catch (error) {
                 setError('Erreur lors du chargement des détails du film');
                 setLoading(false);
             }
         };
 
-        loadMovieDetails();
+        loadMovie();
     }, [id]);
 
-    if (loading) return <div className="loading">Chargement...</div>;
-    if (error) return <div className="error">{error}</div>;
-    if (!movie) return <div className="error">Film non trouvé</div>;
+    const handleWatchlistClick = async () => {
+        if (!isAuthenticated()) {
+            alert('Veuillez vous connecter pour ajouter des films à votre liste');
+            return;
+        }
+
+        try {
+            if (inWatchlist) {
+                await removeFromWatchlist(id);
+                setInWatchlist(false);
+            } else {
+                await addToWatchlist(id);
+                setInWatchlist(true);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la gestion de la watchlist:', error);
+            alert(error.message);
+        }
+    };
 
     const formatDate = (dateString) => {
-        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-        return new Date(dateString).toLocaleDateString('fr-FR', options);
+        return new Date(dateString).toLocaleDateString('fr-FR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     };
 
     const formatRuntime = (minutes) => {
@@ -37,6 +64,26 @@ const MovieDetails = () => {
         const remainingMinutes = minutes % 60;
         return `${hours}h ${remainingMinutes}min`;
     };
+
+    if (loading) {
+        return (
+            <div className="loading">
+                <div className="loading-spinner"></div>
+                <p>Chargement du film...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="error-container">
+                <h2>Une erreur est survenue</h2>
+                <p>{error}</p>
+            </div>
+        );
+    }
+
+    if (!movie) return null;
 
     return (
         <div className="movie-details">
@@ -49,13 +96,20 @@ const MovieDetails = () => {
                             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                             alt={movie.title}
                         />
+                        <button 
+                            onClick={handleWatchlistClick}
+                            className={`watchlist-button ${inWatchlist ? 'in-watchlist' : ''}`}
+                            title={inWatchlist ? 'Retirer de la liste' : 'Ajouter à la liste'}
+                        >
+                            {inWatchlist ? '✓ Dans ma liste' : '+ À regarder plus tard'}
+                        </button>
                     </div>
                     <div className="movie-info-hero">
                         <h1>{movie.title}</h1>
                         <div className="movie-meta">
                             <span className="release-date">{formatDate(movie.release_date)}</span>
                             <span className="runtime">{formatRuntime(movie.runtime)}</span>
-                            <span className="rating">⭐ {movie.vote_average.toFixed(1)}/10</span>
+                            <span className="rating">★ {movie.vote_average.toFixed(1)}/10</span>
                         </div>
                         <div className="genres">
                             {movie.genres.map(genre => (
@@ -64,7 +118,7 @@ const MovieDetails = () => {
                                 </span>
                             ))}
                         </div>
-                        <p className="tagline">{movie.tagline}</p>
+                        {movie.tagline && <p className="tagline">{movie.tagline}</p>}
                         <div className="overview">
                             <h2>Synopsis</h2>
                             <p>{movie.overview}</p>
@@ -116,27 +170,7 @@ const MovieDetails = () => {
                     </div>
                 )}
 
-                <div className="additional-info">
-                    <h2>Informations Complémentaires</h2>
-                    <div className="info-grid">
-                        <div className="info-item">
-                            <h3>Budget</h3>
-                            <p>{movie.budget > 0 ? `$${movie.budget.toLocaleString()}` : 'Non communiqué'}</p>
-                        </div>
-                        <div className="info-item">
-                            <h3>Recettes</h3>
-                            <p>{movie.revenue > 0 ? `$${movie.revenue.toLocaleString()}` : 'Non communiqué'}</p>
-                        </div>
-                        <div className="info-item">
-                            <h3>Statut</h3>
-                            <p>{movie.status}</p>
-                        </div>
-                        <div className="info-item">
-                            <h3>Langue Originale</h3>
-                            <p>{movie.original_language.toUpperCase()}</p>
-                        </div>
-                    </div>
-                </div>
+                <MovieReviews movieId={id} />
             </div>
         </div>
     );
