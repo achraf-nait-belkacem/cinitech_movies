@@ -49,7 +49,7 @@ const Header = () => {
                                 to="/top-rated" 
                                 className={location.pathname === '/top-rated' ? 'active' : ''}
                             >
-                                Top Rated
+                                Les Mieux Notés
                             </Link>
                         </li>
                         <li>
@@ -57,16 +57,16 @@ const Header = () => {
                                 to="/a-venir" 
                                 className={location.pathname === '/a-venir' ? 'active' : ''}
                             >
-                                À venir
+                                À Venir
                             </Link>
                         </li>
                         {user && (
                             <li>
                                 <Link 
-                                    to="/watchlist" 
-                                    className={location.pathname === '/watchlist' ? 'active' : ''}
+                                    to="/favoris" 
+                                    className={location.pathname === '/favoris' ? 'active' : ''}
                                 >
-                                    📋 À regarder plus tard
+                                    Favoris
                                 </Link>
                             </li>
                         )}
@@ -76,7 +76,7 @@ const Header = () => {
                                     to="/admin" 
                                     className={location.pathname === '/admin' ? 'active' : ''}
                                 >
-                                    👑 Admin
+                                    Admin
                                 </Link>
                             </li>
                         )}
