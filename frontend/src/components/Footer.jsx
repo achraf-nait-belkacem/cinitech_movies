@@ -26,7 +26,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>&copy; 2024 CiniTech. Tous droits réservés.</p>
+                <p>&copy; 2025 CiniTech. Tous droits réservés.</p>
                 <p>Propulsé par <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">TMDB</a></p>
             </div>
         </footer>
